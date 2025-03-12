@@ -22,4 +22,8 @@ public class AccountService {
         }
         return null;
     }
+
+    public Account login(String username, String passwrod) {
+        return accountRepository.findByUsernameAndPassword(username, passwrod);
+    }
 }
