@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.function.EntityResponse;
 
 import com.example.entity.Account;
+import com.example.entity.Message;
 import com.example.service.AccountService;
+import com.example.service.MessageService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your
@@ -26,10 +29,12 @@ import com.example.service.AccountService;
 public class SocialMediaController {
 
     private AccountService accountService;
+    private MessageService messageService;
 
     @Autowired
-    public SocialMediaController(AccountService accountService) {
+    public SocialMediaController(AccountService accountService, MessageService messageService) {
         this.accountService = accountService;
+        this.messageService = messageService;
     }
 
     @PostMapping("/register")
@@ -53,6 +58,20 @@ public class SocialMediaController {
             return ResponseEntity.status(200).body(account);
         } else
             return ResponseEntity.status(401).body(null);
+    }
+
+    @PostMapping("/messages")
+    public ResponseEntity<Message> messages(@RequestBody Message model) {
+        if(!model.getMessageText().isEmpty() && model.getMessageText().length() < 255) {
+            Account account = accountService.getAccount(model.getPostedBy());
+            if(account != null) {
+                Message message = messageService.createMessage(model);
+                if(message != null) {
+                    return ResponseEntity.status(200).body(message);
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 
 }
