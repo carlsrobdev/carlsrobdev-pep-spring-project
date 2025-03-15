@@ -1,11 +1,14 @@
 package com.example.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,6 +83,24 @@ public class SocialMediaController {
     @GetMapping("/messages")
     public ResponseEntity<List<Message>> messages() {
         return ResponseEntity.ok(messageService.getMessages());
+    }
+
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<Message> message(@PathVariable int messageId) {
+        Optional<Message> message = messageService.getMessage(messageId);
+        if(message.isPresent())
+            return ResponseEntity.ok(message.get());
+        return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessage(@PathVariable int messageId) {
+        Optional<Message> message = messageService.getMessage(messageId);
+        if(message.isPresent()) {
+            messageService.deleteMessage(messageId);
+            return ResponseEntity.ok(1);
+        }
+        return ResponseEntity.ok(null);
     }
 
 }
