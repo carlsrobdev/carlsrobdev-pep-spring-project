@@ -8,10 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.function.EntityResponse;
 
@@ -101,6 +103,19 @@ public class SocialMediaController {
             return ResponseEntity.ok(1);
         }
         return ResponseEntity.ok(null);
+    }
+
+    @PatchMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> updateMessage(@PathVariable int messageId, @RequestBody Message model) {
+        if(!model.getMessageText().isEmpty() && model.getMessageText().length() < 255) {
+            Optional<Message> message = messageService.getMessage(messageId);
+            if(message.isPresent()) {
+                message.get().setMessageText(model.getMessageText());
+                messageService.updateMessage(message.get());
+                return ResponseEntity.ok(1);
+            }
+        }
+        return ResponseEntity.status(400).body(null);
     }
 
 }
