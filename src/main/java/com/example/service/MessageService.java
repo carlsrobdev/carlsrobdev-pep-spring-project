@@ -39,5 +39,9 @@ public class MessageService {
         messageRepository.save(message);
     }
 
+    public List<Message> getMessageByAccount(Integer postedBy) {
+        return messageRepository.findByPostedBy(postedBy);
+    }
+
 
 }
